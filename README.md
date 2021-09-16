@@ -133,6 +133,12 @@ struct TaskController: RouteCollection {
         task.delete(use: delete(request:))
     }
 }
+
+// MARK: - routes
+
+func routes(_ app: Application) throws {
+    try app.register(collection: TaskController())
+}
 ```
 
 ## Task 목록 제공
@@ -272,6 +278,8 @@ func create(request: Request) throws -> EventLoopFuture<Task> {
 }
 ```
 
+
+
 ## 로컬 환경 DBMS 계정 보안
 
 원격 환경에 서버를 배포하기 전 로컬 환경에서 기능을 점검합니다. 이 때 로컬 환경에서 사용되는 host, userName, password를 gitignore를 통해 의도적으로 제외함으로써 원격 환경에 로컬 환경 정보를 배포하지 않도록 설정합니다.
@@ -280,6 +288,90 @@ func create(request: Request) throws -> EventLoopFuture<Task> {
 
 # 4. 테스트
 
-로컬 환경 내 테스트를 위한 별도 DB 구성
+핵심 로직을 가진 6 개 타입에 대해 12 개의 유닛 테스트를 통해 기능을 검증하였고, Code coverage는 96.8%입니다.
+
+<img width="400" alt="image" src="https://user-images.githubusercontent.com/69730931/133568076-e83cff94-3030-4b58-b8fc-3ff0293c1712.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/69730931/133568188-0ebd6752-9099-49b9-9322-570c5fef53f3.png">
+
+
+
+```swift
+// API를 통해 task를 등록하는 기능을 테스트
+
+func testTaskCanBeCreatedWithAPI() throws {
+    try app.test(.POST, TestAsset.taskURI, beforeRequest: { request in
+        try request.content.encode(TestAsset.dummyTask)
+    }, afterResponse: { response in
+        XCTAssertEqual(response.status, .ok)
+        
+        let receivedTask = try response.content.decode(Task.self)
+        XCTAssertEqual(receivedTask.id, TestAsset.expectedID)
+        XCTAssertEqual(receivedTask.title, TestAsset.expectedTitle)
+        XCTAssertEqual(receivedTask.body, TestAsset.expectedBody)
+        XCTAssertEqual(receivedTask.due_date, TestAsset.expectedDueDate)
+        XCTAssertEqual(receivedTask.state, TestAsset.expectedState)
+        
+        try app.test(.GET, TestAsset.tasksURI, afterResponse: { secondResponse in
+            XCTAssertEqual(secondResponse.status, .ok)
+            
+            let receivedTasks = try secondResponse.content.decode([Task].self)
+            XCTAssertEqual(receivedTasks.count, 1)
+            XCTAssertEqual(receivedTasks.first?.id, TestAsset.expectedID)
+            XCTAssertEqual(receivedTasks.first?.title, TestAsset.expectedTitle)
+            XCTAssertEqual(receivedTasks.first?.body, TestAsset.expectedBody)
+            XCTAssertEqual(receivedTasks.first?.due_date, TestAsset.expectedDueDate)
+            XCTAssertEqual(receivedTasks.first?.state, TestAsset.expectedState)
+        })
+    })
+}
+```
+
+
+
+
+
+## 로컬 환경 내 테스트를 위한 별도 DB 구성
+
+기능 개발 및 검증을 위해 운용하는 로컬 환경의 DB 이외에 test를 위한 DB를 마련하여 두 DB 간 데이터가 섞이지 않도록 구성하였습니다.
+
+```swift
+private func configureDatabase(_ app: Application) {
+    // 원격 환경에 배포되어 서버가 가동되는 경우
+    if let databaseURL = Environment.get(DatabaseEnvironmentKey.url),
+       var postgresConfig = PostgresConfiguration(url: databaseURL) {
+        var clientTLSConfiguration = TLSConfiguration.makeClientConfiguration()
+        clientTLSConfiguration.certificateVerification = .none
+        postgresConfig.tlsConfiguration = clientTLSConfiguration
+        app.databases.use(.postgres(configuration: postgresConfig), as: .psql)
+    } else {
+        // 로컬 환경에서 서버가 가동되는 경우
+        let databaseName: String
+        let databasePort: Int
+        
+        // 테스트 환경에서 가동되는 경우
+        if app.environment == .testing {
+            databaseName = DatabaseEnvironmentKey.localTestingDatabaseName
+            databasePort = DatabaseEnvironmentKey.localTestingPort
+        } else {
+            // 로컬 기능 개발 및 검증 환경에서 가동되는 경우
+            databaseName = DatabaseEnvironmentKey.localDatabaseName
+            databasePort = DatabaseEnvironmentKey.localPort
+        }
+
+        app.databases.use(.postgres(hostname: LocalDBInfo.hostName,
+                                    port: databasePort,
+                                    username: LocalDBInfo.userName,
+                                    password: LocalDBInfo.password,
+                                    database: databaseName), as: .psql)
+    }
+}
+```
+
+
+
+복수의 DB를 구성하는데 `Docker`를 활용하였습니다.
+
+![image](https://user-images.githubusercontent.com/69730931/133570400-4676743a-1729-4a90-a05b-811085c97e21.png)
 
 # 5. Trouble shooting
+
