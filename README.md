@@ -15,7 +15,7 @@ API 사용자를 위해 발행한 문서입니다.
 - [2. 기능](#2-기능)
 - [3. 설계 및 구현](#3-설계-및-구현)
 - [4. 테스트](#4-테스트)
-- [5. Trouble shooting](#5-trouble-shooting)
+- [5. 학습 내용](#5-학습-내용)
 
 ---
 
@@ -43,7 +43,7 @@ API 사용자를 위해 발행한 문서입니다.
 
 
 
-## Task 목록 제공
+## [Task 목록 제공 (구현 방식 바로가기](#task-목록-제공-기능으로-돌아가기)
 
 서버 DB에 등록된 task의 목록을 제공합니다.
 
@@ -53,7 +53,7 @@ API 사용자를 위해 발행한 문서입니다.
 
 
 
-## Task 등록
+## [Task 등록 (구현 방식 바로가기)](#task-등록-기능으로-돌아가기)
 
 새로운 task를 등록할 수 있습니다.
 
@@ -61,7 +61,7 @@ API 사용자를 위해 발행한 문서입니다.
 
 
 
-## Task 수정
+## [Task 수정 (구현 방식 바로가기)](#task-수정-기능으로-돌아가기)
 
 등록된 task를 수정할 수 있습니다.
 
@@ -69,7 +69,7 @@ API 사용자를 위해 발행한 문서입니다.
 
 
 
-## Task 삭제
+## [Task 삭제 (구현 방식 바로가기](#task-삭제-기능으로-돌아가기)
 
 등록된 task를 삭제할 수 있습니다.
 
@@ -77,7 +77,7 @@ API 사용자를 위해 발행한 문서입니다.
 
 
 
-## Request body 검증
+## [Request body 검증 (구현 방식 바로가기)](#request-body-검증-기능으로-돌아가기)
 
 Client의 Request body를 검증하여 적절하지 않은 경우 적절한 실패 응답을 반환합니다.
 
@@ -141,7 +141,7 @@ func routes(_ app: Application) throws {
 }
 ```
 
-## Task 목록 제공
+## [Task 목록 제공 (기능으로 돌아가기)](#task-목록-제공-구현-방식-바로가기)
 
 DB에 등록된 모든 Task 인스턴스를 쿼리하여 반환합니다.
 
@@ -151,7 +151,7 @@ func read(request: Request) throws -> EventLoopFuture<[Task]> {
 }
 ```
 
-## Task 등록
+## [Task 등록 (기능으로 돌아가기)](#task-등록-구현-방식-바로가기)
 
 등록 작업은 아래와 같은 순서로 진행됩니다.
 
@@ -176,7 +176,7 @@ func create(request: Request) throws -> EventLoopFuture<Task> {
 }
 ```
 
-## Task 수정
+## [Task 수정 (기능으로 돌아가기)](#task-수정-구현-방식-바로가기)
 
 수정 작업은 아래와 같은 순서로 수행됩니다.
 
@@ -208,7 +208,7 @@ func update(request: Request) throws -> EventLoopFuture<Task> {
 }
 ```
 
-## Task 삭제
+## [Task 삭제 (기능으로 돌아가기)](#task-삭제-구현-방식-바로가기)
 
 삭제 작업은 아래와 같은 순서로 이루어집니다.
 
@@ -234,7 +234,7 @@ func delete(request: Request) throws -> EventLoopFuture<HTTPStatus> {
 }
 ```
 
-## Request body 검증
+## [Request body 검증 (기능으로 돌아가기)](#request-body-검증-구현-방식-바로가기)
 
 `Validatable` 프로토콜의 `validations(_:)` 메서드를 통해 키 값의 타입과 조건, 필수 여부를 정의합니다.
 
@@ -373,5 +373,17 @@ private func configureDatabase(_ app: Application) {
 
 ![image](https://user-images.githubusercontent.com/69730931/133570400-4676743a-1729-4a90-a05b-811085c97e21.png)
 
-# 5. Trouble shooting
+# 5. 학습 내용
+
+- [[Vapor/Swift] Vapor와 Heroku를 이용한 REST API 구성 및 배포](https://velog.io/@ryan-son/VaporSwift-Vapor와-Heroku를-이용한-REST-API-구성-및-배포)
+  + [[Vapor/Swift] Vapor를 이용하여 서버 구성하기](https://velog.io/@ryan-son/VaporSwift-Vapor를-이용하여-서버-구성하기)
+  + [[Vapor/Swift] Heroku를 이용하여 Vapor 서버 배포하기](https://velog.io/@ryan-son/VaporSwift-Heroku를-이용하여-Vapor-서버-배포하기)
+  + [[Vapor/Swift] Fluent 모델 알아보기](https://velog.io/@ryan-son/VaporSwift-Fluent-모델-타입-알아보기)
+  + [[Vapor/Swift] 인코딩 및 디코딩을 위한 모델 타입 작성하기](https://velog.io/@ryan-son/VaporSwift-인코딩-및-디코딩을-위한-모델-타입-작성하기)
+  + [[Vapor/Swift] Local에서 PostgreSQL DB 구성하기](https://velog.io/@ryan-son/VaporSwift-Local에서-PostgreSQL-DB-구성하기)
+  + [[Vapor/Swift] 배포 서버의 PostgreSQL DB 구성하기](https://velog.io/@ryan-son/VaporSwift-배포-서버의-PostgreSQL-DB-구성하기)
+  + [[Vapor/Swift] 모델에 DTO 추가하기](https://velog.io/@ryan-son/VaporSwift-모델에-DTO-추가하기)
+  + [[Vapor/Swift] CRUD 기능 구현하기](https://velog.io/@ryan-son/VaporSwift-CRUD-기능-구현하기)
+  + [[Vapor/Swift] Request contents 검증하기](https://velog.io/@ryan-son/VaporSwift-Request-컨텐츠-검증하기)
+  + [[Vapor/Swift] 에러 커스터마이징하기](https://velog.io/@ryan-son/VaporSwift-에러-커스터마이징하기)
 
